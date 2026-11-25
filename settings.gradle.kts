@@ -9,6 +9,10 @@ pluginManagement {
             url = uri("${settings.rootDir}/offline-repo")
             metadataSources { gradleMetadata(); mavenPom(); artifact() }
         }
+        // Fallback for anything not yet vendored in offline-repo.
+        google()
+        mavenCentral()
+        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -18,6 +22,9 @@ dependencyResolutionManagement {
             url = offlineRepo
             metadataSources { gradleMetadata(); mavenPom(); artifact() }
         }
+        // Fallback for anything not yet vendored in offline-repo.
+        google()
+        mavenCentral()
     }
 }
 
