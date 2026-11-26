@@ -10,3 +10,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# Gson-mapped master data model and its lenient adapter (release/R8).
+-keep class com.lambrk.qrcode.domain.model.MasterRecord { *; }
+-keep class com.lambrk.qrcode.domain.model.LenientIntAdapter { <init>(); }
+-keepattributes Signature, *Annotation*

@@ -8,6 +8,10 @@ import com.lambrk.qrcode.data.network.NetworkMonitor
 import com.lambrk.qrcode.data.remote.ApiConfig
 import com.lambrk.qrcode.data.remote.VerifyApi
 import com.lambrk.qrcode.data.repository.VerificationRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -39,4 +43,11 @@ class AppContainer(context: Context) {
                 .create(VerifyApi::class.java)
         }
     )
+
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    init {
+        // Load master data at startup; on failure verify() keeps its previous behaviour.
+        appScope.launch { verificationRepository.refreshMasterData() }
+    }
 }
