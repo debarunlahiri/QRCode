@@ -24,7 +24,9 @@ data class ScanUiState(
     val failureMessage: String? = null,
     val checkedOnline: Boolean = false,
     /** Set when the server call failed during verification; shown once in a dialog. */
-    val serverError: String? = null
+    val serverError: String? = null,
+    /** True when the material QR scanned is the same as the equipment QR; shown as a dialog. */
+    val sameQrDialog: Boolean = false
 ) {
     val passed get() = step == ScanStep.DONE && failureMessage == null
 }
@@ -36,14 +38,16 @@ class ScanViewModel(private val repository: VerificationRepository) : ViewModel(
     /** Returns true if the scan was accepted. Scanned text may be any length. */
     fun onScanned(raw: String): Boolean {
         val s = _state.value
-        if (s.verifying || (s.step != ScanStep.EQUIPMENT && s.step != ScanStep.MATERIAL)) return false
+        if (s.verifying || s.sameQrDialog ||
+            (s.step != ScanStep.EQUIPMENT && s.step != ScanStep.MATERIAL)
+        ) return false
         val value = raw.trim()
         if (value.isEmpty()) {
             _state.update { it.copy(error = "Empty QR code") }
             return false
         }
         if (s.step == ScanStep.MATERIAL && value == s.equipmentCode) {
-            _state.update { it.copy(error = "This is the equipment QR. Scan the material QR.") }
+            _state.update { it.copy(sameQrDialog = true, error = null) }
             return false
         }
         when (s.step) {
@@ -93,6 +97,10 @@ class ScanViewModel(private val repository: VerificationRepository) : ViewModel(
                 it.copy(step = ScanStep.EQUIPMENT, equipmentCode = null, error = null)
             else it
         }
+    }
+
+    fun dismissSameQrDialog() {
+        _state.update { it.copy(sameQrDialog = false) }
     }
 
     fun dismissServerError() {

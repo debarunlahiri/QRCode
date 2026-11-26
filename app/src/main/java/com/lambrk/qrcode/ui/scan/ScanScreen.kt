@@ -9,6 +9,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -123,5 +126,18 @@ fun ScanScreen(viewModel: ScanViewModel = viewModel(factory = ScanViewModel.Fact
                 if (state.verifying) LoadingOverlay("Verifying", Color.Black.copy(alpha = 0.7f))
             }
         }
+    }
+
+    if (state.sameQrDialog) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissSameQrDialog,
+            title = { Text("Same QR code scanned") },
+            text = {
+                Text("This is the equipment QR code. Please scan the material QR code instead.")
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::dismissSameQrDialog) { Text("OK") }
+            }
+        )
     }
 }

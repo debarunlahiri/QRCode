@@ -3,7 +3,7 @@ package com.lambrk.qrcode.di
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.lambrk.qrcode.data.login.ExternalLoginChecker
-import com.lambrk.qrcode.data.login.PlaceholderLoginChecker
+import com.lambrk.qrcode.data.login.AidlLoginChecker
 import com.lambrk.qrcode.data.network.NetworkMonitor
 import com.lambrk.qrcode.data.remote.ApiConfig
 import com.lambrk.qrcode.data.remote.VerifyApi
@@ -30,8 +30,8 @@ class AppContainer(context: Context) {
 
     val networkMonitor = NetworkMonitor(context, ApiConfig.baseUrl.takeIf { it.isNotBlank() })
 
-    /** Swap for the real implementation once the other app integration exists. */
-    val loginChecker: ExternalLoginChecker = PlaceholderLoginChecker()
+    /** Asks the login app over AIDL whether a user is signed in. */
+    val loginChecker: ExternalLoginChecker = AidlLoginChecker(context)
 
     val verificationRepository = VerificationRepository(
         ApiConfig.baseUrl.takeIf { it.isNotBlank() }?.let { baseUrl ->
